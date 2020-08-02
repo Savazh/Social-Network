@@ -1,6 +1,8 @@
+//@ts-ignore
 {
   "compilerOptions": {
     "target": "es5",
+    "checkJs": false,
     "lib": [
       "dom",
       "dom.iterable",
@@ -17,7 +19,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react"
+    "jsx": "react" 
   },
   "include": [
     "src"
