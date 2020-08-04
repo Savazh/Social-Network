@@ -4,7 +4,7 @@ import Navbar from './components/NavBar/Navbar';
 import News from './components/News/News'
 import Music from './components/Music/Music'
 import Settings from './components/Settings/Settings'
-import { BrowserRouter, Route, withRouter } from 'react-router-dom'
+import {BrowserRouter, Route, Switch, withRouter} from 'react-router-dom'
 import UsersContainer from './components/Users/UsersContainer';
 import HeaderContainer from './components/Header/HeaderContainer';
 import {connect, Provider} from 'react-redux'
@@ -12,8 +12,8 @@ import { initializeApp } from '../src/redux/app-reducer'
 import { compose } from 'redux';
 import Preloader from './components/common/Preloader/Preloader';
 import store from './redux/redux-store'
-import Switch from "react-router-dom/es/Switch";
 import {withSuspanse} from "./hoc/withSuspanse";
+import Redirect from "react-router-dom/es/Redirect";
 
 // import LoginPage from './Login/Login';
 // import ProfileContainer from './components/Profile/ProfileContainer';
@@ -23,26 +23,31 @@ const ProfileContainer =React.lazy(() => import ('./components/Profile/ProfileCo
 const LoginPage =React.lazy(() => import ('./Login/Login'))
 
 class App extends Component {
+    catchAllUnhandledErrors = (reason, promise) => {
+
+}
   componentDidMount() {
     this.props.initializeApp()
+      window.addEventListener('unhandledrejection', this.catchAllUnhandledErrors);
   }
-  render() {
+  componentWillUnmount() {
+      window.removeEventListener('unhandledrejection', this.catchAllUnhandledErrors);
+  }
+
+    render() {
     if (!this.props.initialized) {
-      return <React.Suspense fallback={<Preloader />}>
-          <Switch>
-              <Route exact path='/dialogs' component={DialogsContainer} />
-              <Route exact path='/profile/:userId?' component={ProfileContainer} />
-              <Route exact path='/users' component={UsersContainer} />
-              <Route exact path='/login' component={LoginPage} />
-          </Switch>
-        </React.Suspense>
-    } 
+      return <Preloader />
+    }
+
     return (
         <div className='app-wrapper'>
           <HeaderContainer />
           <Navbar />
           <div className='app-wrapper-content'>
-            <Route path='/dialogs'
+              <Switch>
+                  <Route path='/' exact>
+                      <Redirect to='/profile'/></Route>
+                  <Route path='/dialogs'
                    render={withSuspanse(DialogsContainer)}/>
             <Route path='/profile/:userId?'
                 render={withSuspanse(ProfileContainer)}/>
@@ -56,6 +61,11 @@ class App extends Component {
               render={() => <Settings />} />
             <Route path='/login'
                    render={withSuspanse(LoginPage)}/>
+
+
+              <Route path='*'
+                     render={() => <div>404 NOT FOUND</div>}/>
+              </Switch>
           </div>
         </div>
     )
