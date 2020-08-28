@@ -1,4 +1,4 @@
-import * as axios from "axios";
+import axios from "axios";
 
 
 const instance = axios.create({
@@ -16,7 +16,7 @@ export const usersAPI = {
         return response.data
       })
   },
-  follow(userId) {
+  follow(userId)  {
     return instance.post(`follow/${userId}`)
   },
   unfollow(userId) {
